@@ -1,0 +1,32 @@
+*.class
+*.log
+
+# sbt specific
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala-IDE specific
+.scala_dependencies
+
+*~
+*.swp
+*.class
+*.log
+.settings
+.cache
+.DS_Store
+target
+atlassian-ide-plugin.xml
+workspace.xml
+project/boot/
+project/plugins/project/
+licensing.info
+.idea/
+.idea_modules/
+*.iml
+test-reports/
+wal
