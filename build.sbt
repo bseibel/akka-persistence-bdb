@@ -13,12 +13,25 @@ fork := true
 
 resolvers += "Oracle" at "http://download.oracle.com/maven"
 
+scalacOptions ++= Seq(
+  "-encoding",
+  "UTF-8",
+  "-deprecation",
+  "-unchecked",
+  "-feature",
+  "-optimise",
+  "-language:implicitConversions",
+  "-language:reflectiveCalls",
+  "-language:postfixOps",
+  "-Yinline-warnings"
+)
 
-libraryDependencies += "com.sleepycat" % "je" % "5.0.103" % "compile"
 
-libraryDependencies += "com.typesafe.akka" %% "akka-persistence-experimental" % "2.3.0-RC1" % "compile"
+libraryDependencies += "com.sleepycat" % "je" % "5.0.103"
 
-libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.0-RC1" % "test"
+libraryDependencies += "com.typesafe.akka" %% "akka-persistence-experimental" % "2.3.0-RC2" % "compile"
+
+libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.0-RC2" % "test"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.0" % "test"
 

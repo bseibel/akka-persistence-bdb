@@ -23,6 +23,7 @@ trait BdbEnvironment extends Actor {
     .setTransactional(true)
     .setLocking(true)
 
+
   val env = new Environment(journalDir, envConfig)
 
   override def postStop(): Unit = {
@@ -46,6 +47,10 @@ class BdbJournal extends SyncWriteJournal with BdbEnvironment with BdbKeys with 
     .setAllowCreate(true)
     .setTransactional(true)
     .setSortedDuplicates(true)
+
+  private[bdb] val txConfig = new TransactionConfig()
+    .setDurability(Durability.COMMIT_WRITE_NO_SYNC)
+    .setReadCommitted(true)
 
   private[bdb] val db = env.openDatabase(null, "journal", dbConfig)
 
@@ -159,7 +164,7 @@ class BdbJournal extends SyncWriteJournal with BdbEnvironment with BdbKeys with 
   }
 
   private[bdb] def withTransaction[T](p: Transaction => T) = {
-    val tx = env.beginTransaction(null, null)
+    val tx = env.beginTransaction(null, txConfig)
     try {
       p(tx)
     } finally {
@@ -168,8 +173,8 @@ class BdbJournal extends SyncWriteJournal with BdbEnvironment with BdbKeys with 
   }
 
   private[bdb] def withTransactionalCursor[T](db: Database)(p: (Cursor, Transaction) => T) = {
-    val tx = env.beginTransaction(null, null)
-    val cursor = db.openCursor(tx, CursorConfig.DEFAULT)
+    val tx = env.beginTransaction(null, txConfig)
+    val cursor = db.openCursor(tx, CursorConfig.READ_COMMITTED)
     try {
       p(cursor, tx)
     } finally {
