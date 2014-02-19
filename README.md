@@ -27,6 +27,7 @@ Add to your application.conf
 ```
 bdb-journal {
     dir = "journal" ; The directory to store the database environment.
+    cache-size-percent = 15 ; size of teh heap to use for the bdb cache
 }
 ```
 

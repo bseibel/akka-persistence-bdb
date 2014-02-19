@@ -22,9 +22,14 @@ trait BdbEnvironment extends Actor {
     .setAllowCreate(true)
     .setTransactional(true)
     .setLocking(true)
-
+    .setConfigParam(EnvironmentConfig.CLEANER_THREADS, config.getString("cleaner-threads"))
+    .setConfigParam(EnvironmentConfig.ENV_DUP_CONVERT_PRELOAD_ALL, "false")
+    .setConfigParam(EnvironmentConfig.LOG_GROUP_COMMIT_INTERVAL, config.getString("group-commit-interval"))
+    .setConfigParam(EnvironmentConfig.STATS_COLLECT, config.getString("stats-collect"))
+    .setConfigParam(EnvironmentConfig.MAX_MEMORY_PERCENT, config.getString("cache-size-percent"))
 
   val env = new Environment(journalDir, envConfig)
+
 
   override def postStop(): Unit = {
     env.close()
