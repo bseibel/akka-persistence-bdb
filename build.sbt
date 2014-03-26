@@ -26,12 +26,25 @@ scalacOptions ++= Seq(
   "-Yinline-warnings"
 )
 
+publishMavenStyle := true
+
+pomIncludeRepository := { _ => false }
+
+publishTo <<= version {
+  (v: String) =>
+    if (v.trim.endsWith("SNAPSHOT"))
+      Some("VerticalScope Nexus Snapshots" at "http://corpint.verticalscope.com:9091/nexus/content/repositories/snapshots")
+    else
+      Some("VerticalScope Nexus Releases" at "http://corpint.verticalscope.com:9091/nexus/content/repositories/releases")
+}
+
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 libraryDependencies += "com.sleepycat" % "je" % "5.0.103"
 
-libraryDependencies += "com.typesafe.akka" %% "akka-persistence-experimental" % "2.3.0-RC2" % "compile"
+libraryDependencies += "com.typesafe.akka" %% "akka-persistence-experimental" % "2.3.1" % "compile"
 
-libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.0-RC2" % "test"
+libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.1" % "test"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.0" % "test"
 
