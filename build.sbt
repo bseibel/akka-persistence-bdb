@@ -2,12 +2,11 @@ organization := "com.github.bseibel"
 
 name := "akka-persistence-bdb"
 
-version := "0.1-SNAPSHOT"
+version := "1.0-RELEASE"
 
 scalaVersion := "2.10.3"
 
 parallelExecution in Test := false
-
 
 fork := true
 
@@ -26,19 +25,9 @@ scalacOptions ++= Seq(
   "-Yinline-warnings"
 )
 
-publishMavenStyle := true
+resolvers += "krasserm at bintray" at "http://dl.bintray.com/krasserm/maven"
 
-pomIncludeRepository := { _ => false }
-
-publishTo <<= version {
-  (v: String) =>
-    if (v.trim.endsWith("SNAPSHOT"))
-      Some("VerticalScope Nexus Snapshots" at "http://corpint.verticalscope.com:9091/nexus/content/repositories/snapshots")
-    else
-      Some("VerticalScope Nexus Releases" at "http://corpint.verticalscope.com:9091/nexus/content/repositories/releases")
-}
-
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+libraryDependencies += "com.github.krasserm" %% "akka-persistence-testkit" % "0.3" % "test"
 
 libraryDependencies += "com.sleepycat" % "je" % "5.0.103"
 

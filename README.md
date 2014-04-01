@@ -2,7 +2,7 @@
 A journal plugin for akka-persistence using the pure java bdb library.
 
 ## Requirements
-At least Akka 2.3.0-RC1
+At least Akka 2.3.0
 
 ## Why BDB over LevelDB?
 If your application requires a very high message rate its very possible you will run into the situation where
@@ -12,9 +12,13 @@ For more details see [this thread](https://groups.google.com/forum/#!msg/leveldb
 
 
 ## Installation
-Compile and publish locally `sbt publishLocal`, then include as a dependency:
+Add the following lines to your build.sbt:
 
-    libraryDependencies += "com.github.bseibel" %% "akka-persistence-bdb" % "0.1-SNAPSHOT"
+    resolvers += "bseibel at bintray" at "http://dl.bintray.com/bseibel/release"
+
+    libraryDependencies += "com.github.bseibel" %% "akka-persistence-bdb" % "1.0"
+
+This version of the plugin is compiled with Scala 2.10.3
 
 ## Configuration
 
@@ -26,15 +30,17 @@ Add to your application.conf
 
 ```
 bdb-journal {
-    dir = "journal" ; The directory to store the database environment.
-    cache-size-percent = 15 ; size of teh heap to use for the bdb cache
+    dir = "journal" ; The directory to store the database environment
+    sync = true ; true = Durability.COMMIT_SYNC, false = Durability.COMMIT_WRITE_NO_SYNC
+    cache-size-percent = 15 ; size of the heap to use for the bdb cache
+    cleaner-threads = 2 ; Number of threads used for journal compaction
+    stats-collect = false ; Log usage stats to journal directory
 }
 ```
 
 
 ## TODO
 
-- More tunables for the bdb environment
 - Optimization pass
 - Expose other bdb features (replication, etc)
 
