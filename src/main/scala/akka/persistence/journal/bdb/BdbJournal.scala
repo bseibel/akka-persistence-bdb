@@ -54,7 +54,7 @@ class BdbJournal extends SyncWriteJournal with BdbEnvironment with BdbKeys with 
     .setSortedDuplicates(true)
 
   private[bdb] val txConfig = new TransactionConfig()
-    .setDurability(Durability.COMMIT_WRITE_NO_SYNC)
+    .setDurability(if (config.getBoolean("sync")) Durability.COMMIT_SYNC else Durability.COMMIT_WRITE_NO_SYNC)
     .setReadCommitted(true)
 
   private[bdb] val db = env.openDatabase(null, "journal", dbConfig)
