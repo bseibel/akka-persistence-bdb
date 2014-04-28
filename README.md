@@ -18,7 +18,7 @@ Add the following lines to your build.sbt:
 
     libraryDependencies += "com.github.bseibel" %% "akka-persistence-bdb" % "1.0"
 
-This version of the plugin is compiled with Scala 2.10.3
+This version of the plugin is cross compiled with Scala 2.10.4 and 2.11.0
 
 ## Configuration
 
