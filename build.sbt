@@ -42,7 +42,7 @@ resolvers += "krasserm at bintray" at "http://dl.bintray.com/krasserm/maven"
 
 libraryDependencies += "com.github.krasserm" %% "akka-persistence-testkit" % "0.3.3" % "test"
 
-libraryDependencies += "com.sleepycat" % "je" % "S"
+libraryDependencies += "com.sleepycat" % "je" % "6.0.11"
 
 libraryDependencies += "com.typesafe.akka" %% "akka-persistence-experimental" % "2.3.4" % "compile"
 
