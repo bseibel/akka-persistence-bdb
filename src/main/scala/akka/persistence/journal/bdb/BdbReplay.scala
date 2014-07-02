@@ -1,11 +1,13 @@
 package akka.persistence.journal.bdb
 
-import akka.persistence.journal.SyncWriteJournal
-import akka.persistence.PersistentRepr
-import scala.concurrent.Future
-import com.sleepycat.je._
-import scala.annotation.tailrec
 import java.nio.ByteBuffer
+
+import akka.persistence.PersistentRepr
+import akka.persistence.journal.SyncWriteJournal
+import com.sleepycat.je._
+
+import scala.annotation.tailrec
+import scala.concurrent.Future
 
 
 trait BdbReplay {
@@ -17,12 +19,12 @@ trait BdbReplay {
     serialization.deserialize(bytes, classOf[PersistentRepr]).get
   }
 
-  def asyncReplayMessages(processorId: String, fromSequenceNr: Long, toSequenceNr: Long, max: Long)(replayCallback: (PersistentRepr) => Unit): Future[Unit] = {
+  def asyncReplayMessages(persistenceId: String, fromSequenceNr: Long, toSequenceNr: Long, max: Long)(replayCallback: (PersistentRepr) => Unit): Future[Unit] = {
 
-    val pid = getProcessorId(processorId)
+    val pid = getPersistenceId(persistenceId)
 
     @tailrec
-    def replay(tx: Transaction, cursor: Cursor, processorId: Long, count: Long)(replayCallback: (PersistentRepr) => Unit): Unit = {
+    def replay(tx: Transaction, cursor: Cursor, persistenceId: Long, count: Long)(replayCallback: (PersistentRepr) => Unit): Unit = {
 
       @tailrec
       def scanFlags(p: PersistentRepr): PersistentRepr = {
@@ -46,7 +48,7 @@ trait BdbReplay {
       val dbKey = new DatabaseEntry
       val dbVal = new DatabaseEntry
       cursor.getCurrent(dbKey, dbVal, LockMode.DEFAULT)
-      if (keyRangeCheck(dbKey, processorId, fromSequenceNr, toSequenceNr) && count < max) {
+      if (keyRangeCheck(dbKey, persistenceId, fromSequenceNr, toSequenceNr) && count < max) {
         val value = dbVal.getData
         if (value(0) == DATA_MAGIC) {
           val data = ByteBuffer.allocate(value.length - 1)
@@ -56,7 +58,7 @@ trait BdbReplay {
           replayCallback(scanFlags(persist))
         }
         if (cursor.getNextNoDup(dbKey, dbVal, LockMode.DEFAULT) == OperationStatus.SUCCESS)
-          replay(tx, cursor, processorId, count + 1)(replayCallback)
+          replay(tx, cursor, persistenceId, count + 1)(replayCallback)
       }
 
     }
@@ -72,11 +74,11 @@ trait BdbReplay {
 
   }
 
-  def asyncReadHighestSequenceNr(processorId: String, fromSequenceNr: Long): Future[Long] = {
+  def asyncReadHighestSequenceNr(persistenceId: String, fromSequenceNr: Long): Future[Long] = {
     Future(
       withTransaction {
         tx =>
-          val pid = getProcessorId(processorId)
+          val pid = getPersistenceId(persistenceId)
           val dbVal = new DatabaseEntry()
           val result = if (db.get(tx, getMaxSeqnoKey(pid), dbVal, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
             ByteBuffer.wrap(dbVal.getData).getLong

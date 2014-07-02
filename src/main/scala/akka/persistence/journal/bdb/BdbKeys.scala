@@ -1,11 +1,12 @@
 package akka.persistence.journal.bdb
 
-import com.sleepycat.je._
 import java.nio.ByteBuffer
-import scala.Some
-import scala.annotation.tailrec
-import akka.actor.Actor
 import java.util.concurrent.atomic.AtomicLong
+
+import akka.actor.Actor
+import com.sleepycat.je._
+
+import scala.annotation.tailrec
 
 private[bdb] trait BdbKeys extends Actor {
   this: BdbJournal =>
@@ -23,7 +24,7 @@ private[bdb] trait BdbKeys extends Actor {
 
   def getKey(processorId: String, sequenceNo: Long): DatabaseEntry = {
     val buffer = ByteBuffer.allocate(16)
-    buffer.putLong(getProcessorId(processorId))
+    buffer.putLong(getPersistenceId(processorId))
     buffer.putLong(sequenceNo)
 
     new DatabaseEntry(buffer.array)
@@ -47,20 +48,20 @@ private[bdb] trait BdbKeys extends Actor {
     )
   }
 
-  def getProcessorId(processorId: String): Long = {
-    mapping.get(processorId) match {
+  def getPersistenceId(persistenceId: String): Long = {
+    mapping.get(persistenceId) match {
       case Some(id) => id
 
       case None =>
         val nextId = currentId.addAndGet(1L)
-        val dbKey = new DatabaseEntry(processorId.getBytes("UTF-8"))
+        val dbKey = new DatabaseEntry(persistenceId.getBytes("UTF-8"))
         val dbVal = new DatabaseEntry(ByteBuffer.allocate(8).putLong(nextId).array)
         val tx = env.beginTransaction(null, null)
         try {
           if (mappingDb.put(tx, dbKey, dbVal) == OperationStatus.KEYEXIST) {
-            throw new IllegalStateException("Attempted to insert already existing processorId mapping.")
+            throw new IllegalStateException("Attempted to insert already existing persistenceId mapping.")
           }
-          mapping = mapping + (processorId -> nextId)
+          mapping = mapping + (persistenceId -> nextId)
           nextId
         } finally {
           cleanupTx(tx)

@@ -2,11 +2,11 @@ organization := "com.github.bseibel"
 
 name := "akka-persistence-bdb"
 
-version := "1.0"
+version := "1.0.1"
 
 scalaVersion := "2.10.4"
 
-crossScalaVersions := Seq("2.11.0")
+crossScalaVersions := Seq("2.11.1")
 
 parallelExecution in Test := false
 
@@ -40,13 +40,13 @@ credentials += Credentials(Path.userHome / ".ivy2" / ".credentials-bintree")
 
 resolvers += "krasserm at bintray" at "http://dl.bintray.com/krasserm/maven"
 
-libraryDependencies += "com.github.krasserm" %% "akka-persistence-testkit" % "0.3.1" % "test"
+libraryDependencies += "com.github.krasserm" %% "akka-persistence-testkit" % "0.3.3" % "test"
 
-libraryDependencies += "com.sleepycat" % "je" % "5.0.103"
+libraryDependencies += "com.sleepycat" % "je" % "S"
 
-libraryDependencies += "com.typesafe.akka" %% "akka-persistence-experimental" % "2.3.2" % "compile"
+libraryDependencies += "com.typesafe.akka" %% "akka-persistence-experimental" % "2.3.4" % "compile"
 
-libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.2" % "test"
+libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.4" % "test"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.1.4" % "test"
 

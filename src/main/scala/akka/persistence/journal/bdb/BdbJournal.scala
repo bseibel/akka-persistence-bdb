@@ -1,14 +1,16 @@
 package akka.persistence.journal.bdb
 
-import akka.persistence.journal.SyncWriteJournal
-import akka.persistence.{PersistentRepr, PersistentConfirmation, PersistentId}
-import com.sleepycat.je._
 import java.io.File
-import scala.collection.immutable.Seq
-import akka.serialization.SerializationExtension
 import java.nio.ByteBuffer
-import scala.annotation.tailrec
+
 import akka.actor.Actor
+import akka.persistence.journal.SyncWriteJournal
+import akka.persistence.{PersistentConfirmation, PersistentId, PersistentRepr}
+import akka.serialization.SerializationExtension
+import com.sleepycat.je._
+
+import scala.annotation.tailrec
+import scala.collection.immutable.Seq
 
 
 trait BdbEnvironment extends Actor {
@@ -80,7 +82,7 @@ class BdbJournal extends SyncWriteJournal with BdbEnvironment with BdbKeys with 
       tx =>
         messages.foreach {
           m =>
-            val pid = getProcessorId(m.processorId)
+            val pid = getPersistenceId(m.processorId)
             if (db.put(tx, getKey(pid, m.sequenceNr), bdbSerialize(m)) != OperationStatus.SUCCESS)
               throw new IllegalStateException("Failed to write message to database")
 
@@ -146,7 +148,7 @@ class BdbJournal extends SyncWriteJournal with BdbEnvironment with BdbKeys with 
     withTransactionalCursor(db) {
       (cursor, tx) =>
         if (cursor.getSearchKeyRange(getKey(processorId, 1L), new DatabaseEntry(), LockMode.DEFAULT) == OperationStatus.SUCCESS)
-          iterateCursor(cursor, getProcessorId(processorId))
+          iterateCursor(cursor, getPersistenceId(processorId))
     }
 
   }
