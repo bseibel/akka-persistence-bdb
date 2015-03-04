@@ -16,7 +16,7 @@ Add the following lines to your build.sbt:
 
     resolvers += "bseibel at bintray" at "http://dl.bintray.com/bseibel/release"
 
-    libraryDependencies += "com.github.bseibel" %% "akka-persistence-bdb" % "1.0"
+    libraryDependencies += "com.github.bseibel" %% "akka-persistence-bdb" % "1.0.1"
 
 This version of the plugin is cross compiled with Scala 2.10.4 and 2.11.1
 
